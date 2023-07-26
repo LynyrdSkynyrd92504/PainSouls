@@ -4,37 +4,47 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class State
+namespace DS
 {
-    bool forceExit;
-    List<StateAction> fixedUpdateActions = new List<StateAction>();
-    List<StateAction> updateActions = new List<StateAction>();
-    List<StateAction> lateUpdateActions = new List<StateAction>();
-
-    public void FixedTick()
+    public class State
     {
-        ExecuteListOfActions(fixedUpdateActions);
-    }
+        bool forceExit;
+        List<StateAction> fixedUpdateActions;
+        List<StateAction> updateActions;
+        List<StateAction> lateUpdateActions;
 
-    public void Tick()
-    {
-        ExecuteListOfActions(updateActions);
-    }
-
-    public void LateTick()
-    {
-        ExecuteListOfActions(lateUpdateActions);
-        forceExit = false;
-    }
-
-    void ExecuteListOfActions(List<StateAction> actions)
-    {
-        for (int i = 0; i < actions.Count; i++)
+        public State(List<StateAction> fixedUpdateActions, List<StateAction> updateActions, List<StateAction> lateUpdateActions)
         {
-            if (forceExit) 
-                return;
+            this.fixedUpdateActions = fixedUpdateActions;
+            this.updateActions = updateActions;
+            this.lateUpdateActions = lateUpdateActions;
+        }
 
-            actions[i].Execute();
+        public void FixedTick()
+        {
+            ExecuteListOfActions(fixedUpdateActions);
+        }
+
+        public void Tick()
+        {
+            ExecuteListOfActions(updateActions);
+        }
+
+        public void LateTick()
+        {
+            ExecuteListOfActions(lateUpdateActions);
+            forceExit = false;
+        }
+
+        void ExecuteListOfActions(List<StateAction> actions)
+        {
+            for (int i = 0; i < actions.Count; i++)
+            {
+                if (forceExit)
+                    return;
+
+                actions[i].Execute();
+            }
         }
     }
 }
